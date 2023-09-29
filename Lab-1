@@ -1,0 +1,176 @@
+##question - 1
+data <- read.csv("airpass_USA.csv", header = T)
+
+# Coverting the data to a vector in increasing time sequence
+years <- data[, 1]
+values <- as.matrix(data[ ,-1])
+values <- as.numeric(t(values))
+len <- length(values)
+
+# Plotting a graph
+plot(c(1:len), values, 
+     type = "l", 
+     xlab = "Time (months)", 
+     ylab = "International passenger bookings (per thousand)",
+     main = "US Airline",
+     xaxp = c(0, len * 12, len))
+
+# Relative ordering test
+Q = 0
+for(i in 1:len)
+{
+  for(j in (i+1):len)
+  {
+    if(i <= len && j <= len && values[i] > values[j])
+      Q = Q + 1
+  }
+}
+
+tau <- (1 - (4*Q / (len * (len - 1))))
+e_t <- 0
+var_t <- (2 * (2*len + 5)) / ((9*len) * (len-1))
+
+Z <- (tau - e_t)/(sqrt(var_t))
+alpha <- 0.05
+z_a_2 <- qnorm((1 - alpha/2))
+
+if(abs(Z) > z_a_2)
+{
+  print("Trend is present in data")
+}else
+{
+  print("Not trend is present in data")
+}
+
+## question - 2
+relative_test <- function(values, len, alpha = 0.05)
+{
+  Q = 0
+  for(i in 1:len)
+  {
+    for(j in (i+1):len)
+    {
+      if(i <= len && j <= len && values[i] > values[j])
+        Q = Q + 1
+    }
+  }
+
+  tau <- (1 - (4*Q / (len * (len - 1))))
+  e_t <- 0
+  var_t <- (2 * (2*len + 5)) / ((9*len) * (len-1))
+
+  Z <- (tau - e_t)/(sqrt(var_t))
+  alpha <- 0.05
+  z_a_2 <- qnorm((1 - alpha/2))
+
+  if(abs(Z) > z_a_2)
+  {
+    print("Trend is present in data")
+    return(T)
+  }else
+  {
+    print("Not trend is present in data")
+    return(F)
+  }
+}
+
+# Preparing the data
+data <- read.csv("maine_unemployment.csv")
+
+values <- as.matrix(data)
+values <- as.numeric(values)
+len <- length(values)
+
+# Plotting the graph
+plot(c(1:len), values, 
+     type = "l", 
+     xlab = "Time (months)", 
+     ylab = "Unemployment rates",
+     main = "US Government",
+     xaxp = c(0, len * 12, len))
+
+# Relative ordering test without splitting
+relative_test(values = values, len = len)
+
+# Splitting the data
+
+split_time <- which.min(values)
+first_half <- values[c(1:split_time)]
+second_half <- values[-c(1:split_time)]
+
+first_len <- length(first_half)
+second_len <- length(second_half)
+
+# First half relative test
+relative_test(values = first_half, len = first_len)
+
+# Second half relative test
+relative_test(values = second_half, len = second_len)
+
+## here we need to  divide into 3 parts
+
+## question - 3
+relative_test <- function(values, len, alpha = 0.05)
+{
+  Q = 0
+  for(i in 1:len)
+  {
+    for(j in (i+1):len)
+    {
+      if(i <= len && j <= len && values[i] > values[j])
+        Q = Q + 1
+    }
+  }
+  
+  tau <- (1 - (4*Q / (len * (len - 1))))
+  e_t <- 0
+  var_t <- (2 * (2*len + 5)) / ((9*len) * (len-1))
+  
+  Z <- (tau - e_t)/(sqrt(var_t))
+  alpha <- 0.05
+  z_a_2 <- qnorm((1 - alpha/2))
+  
+  if(abs(Z) > z_a_2)
+  {
+    print("Trend is present in data")
+    return(T)
+  }else
+  {
+    print("Not trend is present in data")
+    return(F)
+  }
+}
+
+# Reading the data
+data <- read.csv("nifty.csv")
+
+time <- data$Month
+values <- data$NiftyClose
+len <- length(values)
+
+# Plotting the values
+plot(c(1:len), values, 
+     type = "l", 
+     xlab = "Time (months)", 
+     ylab = "Nifty",
+     main = "Indian stock market",
+     xaxp = c(0, len * 12, len))
+
+# Creating return value data
+return <- numeric(length = len - 1)
+for(i in 1:(len-1))
+{
+  return[i] = log(values[i+1]/values[i])
+}
+
+# Plotting the return
+plot(c(1:(len-1)), return, 
+     type = "l", 
+     xlab = "Time (months)", 
+     ylab = "Nifty return",
+     main = "Indian stock market",
+     xaxp = c(0, len * 12, len))
+
+# Relative ordering test
+
+relative_test(return, len-1)
