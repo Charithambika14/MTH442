@@ -1,0 +1,167 @@
+## question - 1
+### part - 1
+library(tseries)
+
+data <- read.csv("data1.csv")
+series <- data$X.0.142212064
+n <- length(series)
+t <- 1:n
+
+plot(t, series, main = "Data 1", type = "l")
+
+# DF test
+res_df <- adf.test(series, k = 0)
+res_df
+
+# ADF test
+res_adf <- adf.test(series)
+res_adf
+
+# PP test 
+res_pp <- pp.test(series)
+res_pp
+
+# KPSS test
+res_kpss <- kpss.test(series)
+res_kpss
+
+# White Noise
+
+### part - 2
+library(tseries)
+
+data <- read.csv("data2.csv")
+series <- data$X0.941257007
+n <- length(series)
+t <- 1:n
+
+plot(t, series, main = "Data 2", type = "l")
+
+# DF test
+res_df <- adf.test(series, k = 0)
+res_df
+
+# ADF test
+res_adf <- adf.test(series)
+res_adf
+
+# PP test 
+res_pp <- pp.test(series)
+res_pp
+
+# KPSS test
+res_kpss <- kpss.test(series)
+res_kpss
+
+# AR time series
+
+### part - 3
+library(tseries)
+
+data <- read.csv("data3.csv")
+series <- data$X27.25086683
+n <- length(series)
+t <- 1:n
+
+plot(t, series, main = "Data 3", type = "l")
+
+# DF test
+res_df <- adf.test(series, k = 0)
+res_df
+
+# ADF test
+res_adf <- adf.test(series)
+res_adf
+
+# PP test 
+res_pp <- pp.test(series)
+res_pp
+
+# KPSS test
+res_kpss <- kpss.test(series)
+res_kpss
+
+# Differencing
+y_diff <- numeric(length = n)
+y_diff[0]
+for(i in 2:n)
+  y_diff[i] = series[i] - series[i-1]
+
+plot(t, y_diff, main = "Data 3", type = "l", ylab = "Differenced data")
+
+# DF test
+res_df <- adf.test(y_diff, k = 0)
+res_df
+
+# ADF test
+res_adf <- adf.test(y_diff)
+res_adf
+
+# PP test 
+res_pp <- pp.test(y_diff)
+res_pp
+
+# KPSS test
+res_kpss <- kpss.test(y_diff)
+res_kpss
+
+# Random walk without drift
+
+### part - 4
+library(tseries)
+
+data <- read.csv("data4.csv")
+series <- data$X2.181586827
+n <- length(series)
+t <- 1:n
+
+plot(t, series, main = "Data 4", type = "l")
+
+# DF test
+res_df <- adf.test(series, k = 0)
+res_df
+
+# ADF test
+res_adf <- adf.test(series)
+res_adf
+
+# PP test 
+res_pp <- pp.test(series)
+res_pp
+
+# KPSS test
+res_kpss <- kpss.test(series)
+res_kpss
+
+# Differencing
+y_diff <- numeric(length = n)
+y_diff[0] <- series[0]
+for(i in 2:n)
+  y_diff[i] = series[i] - series[i-1]
+
+plot(t, y_diff, main = "Data 4", type = "l", ylab = "Differenced data")
+
+y_diff_2 <- numeric(length = n)
+y_diff_2[0] <- y_diff[0]
+for(i in 2:n)
+  y_diff_2[i] = y_diff[i] - y_diff[i-1]
+
+plot(t, y_diff_2, main = "Data 4", type = "l", ylab = "Differenced twice data")
+
+# DF test
+res_df <- adf.test(y_diff_2, k = 0)
+res_df
+
+# ADF test
+res_adf <- adf.test(y_diff_2)
+res_adf
+
+# PP test 
+res_pp <- pp.test(y_diff_2)
+res_pp
+
+# KPSS test
+res_kpss <- kpss.test(y_diff_2)
+res_kpss
+
+# Random walk with constant drift and linear trend
