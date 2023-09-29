@@ -1,0 +1,431 @@
+## question - 1
+library(Kendall)
+
+turning_test <- function(x, alpha = 0.05)
+{
+  n = length(x)
+  u <- numeric(length = n)
+  
+  for(i in 2:(n-1))
+  {
+    if(y[i] > y[i-1] && y[i] > y[i+1])
+      u[i] = 1
+    else
+      u[i] = 0
+  }
+  
+  Q = sum(u)
+  t_a <- qnorm((1 - alpha/2))
+  if(abs(Q) < t_a)
+    return (T)
+  else
+    return (F)
+}
+
+moving_avg <- function(gdp, al = 0.75)
+{
+  n <- length(gdp)
+  y_exp <- numeric(length = n)
+  
+  y_exp[0] = al*gdp[0]
+  for(i in 2:n)
+  {
+    y_exp[i] = al*gdp[i] + (1-al)*y_exp[i-1]
+  }
+  
+  return(y_exp)
+}
+
+plot_trends <- function(y_avg, y_lse)
+{
+  n = length(y_avg)
+  plot(c(1:n), y_avg, type = 'l', col = 'red', ylab = "GDP", xlab = "Time", main = "GDP trend", lwd = 2)
+  lines(c(1:n), y_lse, col = 'blue', lwd = 2)
+  legend("topleft", fill = c('red', 'blue'), legend = c("Avg", "LSE"))
+  return(1)
+}
+
+# Loading the dataset
+data <- read.csv("GDP_per_capita_Scandinavia.csv")
+sweden <- data[which(data$counry == "SWE"), ]
+denmark <- data[which(data$counry == "DNK"), ]
+norway <- data[which(data$counry == "NOR"), ]
+finland <- data[which(data$counry == "FIN"), ]
+
+######################## (a) and (b)
+
+######################## Sweden 
+country <- sweden
+plot(country$year, country$GDP..USD_per_capita., xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(country$GDP..USD_per_capita.)
+summary(res)
+
+# Since p value 2.22e-16, null hypothesis is rejected
+
+# Fitting a linear model
+y <- country$GDP..USD_per_capita.
+x <- matrix(1:length(y), nrow = length(y))
+
+fit <- lm(y~x)
+coeff <- fit$coefficients
+
+# Predicting the trend
+x <- cbind(1, x)
+y_pred <- x %*% coeff 
+y_swe_lse <- y_pred
+
+# Detrending the data
+y_det <- y - y_pred
+plot(1:length(y), y_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det)
+summary(res)
+
+# Since p value id 0.29582, we accept the null hypothesis
+
+ran_res <- turning_test(y_det, 0.05)
+# The residual series is not purely random
+
+######################## Denmark
+country <- denmark
+plot(country$year, country$GDP..USD_per_capita., xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(country$GDP..USD_per_capita.)
+summary(res)
+
+# Since p value 2.22e-16, null hypothesis is rejected
+
+# Fitting a linear model
+y <- country$GDP..USD_per_capita.
+x <- matrix(1:length(y), nrow = length(y))
+
+fit <- lm(y~x)
+coeff <- fit$coefficients
+
+# Predicting the trend
+x <- cbind(1, x)
+y_pred <- x %*% coeff
+y_den_lse <- y_pred 
+
+# Detrending the data
+y_det <- y - y_pred
+plot(1:length(y), y_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det)
+summary(res)
+
+# Since p value is 0.29102, we accept the null hypothesis
+
+ran_res <- turning_test(y_det, 0.05)
+# The residual series is not purely random
+
+######################## Norway
+
+country <- norway
+plot(country$year, country$GDP..USD_per_capita., xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(country$GDP..USD_per_capita.)
+summary(res)
+
+# Since p value 2.22e-16, null hypothesis is rejected
+
+# Fitting a linear model
+y <- country$GDP..USD_per_capita.
+x <- matrix(1:length(y), nrow = length(y))
+
+fit <- lm(y~x)
+coeff <- fit$coefficients
+
+# Predicting the trend
+x <- cbind(1, x)
+y_pred <- x %*% coeff
+y_nor_lse <- y_pred
+
+# Detrending the data
+y_det <- y - y_pred
+plot(1:length(y), y_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det)
+summary(res)
+
+# Since p value is 0.20568, we accept the null hypothesis
+
+ran_res <- turning_test(y_det, 0.05)
+# The residual series is not purely random
+
+######################## Finland
+country <- finland
+plot(country$year, country$GDP..USD_per_capita., xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(country$GDP..USD_per_capita.)
+summary(res)
+
+# Since p value 2.22e-16, null hypothesis is rejected
+
+# Fitting a linear model
+y <- country$GDP..USD_per_capita.
+x <- matrix(1:length(y), nrow = length(y))
+
+fit <- lm(y~x)
+coeff <- fit$coefficients
+
+# Predicting the trend
+x <- cbind(1, x)
+y_pred <- x %*% coeff
+y_fin_lse <- y_pred
+
+# Detrending the data
+y_det <- y - y_pred
+plot(1:length(y), y_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det)
+summary(res)
+
+# Since p value is 0.35912, we accept the null hypothesis
+
+ran_res <- turning_test(y_det, 0.05)
+# The residual series is not purely random
+
+######################## (c)
+
+######################## Sweden 
+country <- sweden
+plot(country$year, country$GDP..USD_per_capita., xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(country$GDP..USD_per_capita.)
+summary(res)
+
+# Since p value 2.22e-16, null hypothesis is rejected
+
+y <- country$GDP..USD_per_capita.
+y_det <- numeric(length = length(y))
+for(i in 2:length(y))
+{
+  y_det[i] <- y[i] - y[i-1]
+}
+
+plot(1:length(y), y_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det)
+summary(res)
+
+y_det_det <- numeric(length = length(y))
+for(i in 2:length(y))
+{
+  y_det_det[i] <- y_det[i] - y_det[i-1]
+}
+
+plot(1:length(y), y_det_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det_det)
+summary(res)
+
+######################## Denamrk
+
+country <- denmark
+plot(country$year, country$GDP..USD_per_capita., xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(country$GDP..USD_per_capita.)
+summary(res)
+
+# Since p value 2.22e-16, null hypothesis is rejected
+
+y <- country$GDP..USD_per_capita.
+y_det <- numeric(length = length(y))
+for(i in 2:length(y))
+{
+  y_det[i] <- y[i] - y[i-1]
+}
+
+plot(1:length(y), y_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det)
+summary(res)
+
+y_det_det <- numeric(length = length(y))
+for(i in 2:length(y))
+{
+  y_det_det[i] <- y_det[i] - y_det[i-1]
+}
+
+plot(1:length(y), y_det_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det_det)
+summary(res)
+
+######################## Finland
+
+country <- finland
+plot(country$year, country$GDP..USD_per_capita., xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(country$GDP..USD_per_capita.)
+summary(res)
+
+# Since p value 2.22e-16, null hypothesis is rejected
+
+y <- country$GDP..USD_per_capita.
+y_det <- numeric(length = length(y))
+for(i in 2:length(y))
+{
+  y_det[i] <- y[i] - y[i-1]
+}
+
+plot(1:length(y), y_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det)
+summary(res)
+
+y_det_det <- numeric(length = length(y))
+for(i in 2:length(y))
+{
+  y_det_det[i] <- y_det[i] - y_det[i-1]
+}
+
+plot(1:length(y), y_det_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det_det)
+summary(res)
+
+######################## Norway
+
+country <- norway
+plot(country$year, country$GDP..USD_per_capita., xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(country$GDP..USD_per_capita.)
+summary(res)
+
+# Since p value 2.22e-16, null hypothesis is rejected
+
+y <- country$GDP..USD_per_capita.
+y_det <- numeric(length = length(y))
+for(i in 2:length(y))
+{
+  y_det[i] <- y[i] - y[i-1]
+}
+
+plot(1:length(y), y_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det)
+summary(res)
+
+y_det_det <- numeric(length = length(y))
+for(i in 2:length(y))
+{
+  y_det_det[i] <- y_det[i] - y_det[i-1]
+}
+
+plot(1:length(y), y_det_det, xlab = "Year", ylab = "GDP", main = "GDP change", type = "l")
+
+res <- MannKendall(y_det_det)
+summary(res)
+
+######################## (d)
+
+######################## Sweden
+country <- sweden
+gdp <- country$GDP..USD_per_capita.
+y_avg <- moving_avg(gdp)
+
+plot_trends(y_avg, y_swe_lse)
+
+######################## Denmark
+country <- denmark
+gdp <- country$GDP..USD_per_capita.
+y_avg <- moving_avg(gdp)
+
+plot_trends(y_avg, y_den_lse)
+
+######################## Norway
+country <- norway
+gdp <- country$GDP..USD_per_capita.
+y_avg <- moving_avg(gdp)
+
+plot_trends(y_avg, y_nor_lse)
+
+######################## Finland
+country <- finland
+gdp <- country$GDP..USD_per_capita.
+y_avg <- moving_avg(gdp)
+
+plot_trends(y_avg, y_fin_lse)
+
+
+## question - 2
+library(Kendall)
+library(pracma)
+
+moving_avg <- function(series, period)
+{
+  n <- length(series)
+  estimate <- numeric(length = n)
+  
+  q <- period/2
+  for(i in (q+1):(n-q))
+  {
+    sum <- 0
+    for(j in -q:q)
+    {
+      if(abs(j) == q)
+        sum = sum + 0.5*series[i+j]
+      else
+        sum = sum + series[i+j]
+    }
+    estimate[i] <- sum/(2*q)
+  }
+  
+  for(i in 1:(q))
+    estimate[i] = estimate[q+i]
+  for(i in 1:q)
+    estimate[n-q+i] = estimate[n-q-i]
+  
+  return (estimate)
+}
+
+data <- read.csv("airpass_USA.csv")
+years <- data$Year
+
+data_series <- data[ ,-1]
+data_series <- as.matrix(data_series)
+data_series <- matrix(t(data_series), nrow = 1)
+
+n <- length(data_series)
+
+plot(c(1:n), data_series, type = 'l', xlab = "Time", ylab = "Data", main = "Time Series")
+res <- MannKendall(data_series)
+summary(res)
+# A trend component is present in the data
+
+y <- as.numeric(data_series)
+
+# x <- matrix(c(1:n), nrow = n)
+# X <- cbind(1, x, x^2)
+# 
+# beta <- solve(t(X) %*% X) %*% t(X) %*% y
+# y_hat <- X %*% beta
+
+period <- 12
+y_hat <- moving_avg(y, period)
+
+y_det <- y - y_hat
+plot(c(1:n), y_hat, type = 'l', xlab = "Time", ylab = "Trend with window sz 12", main = "Time Series")
+plot(c(1:n), y_det, type = 'l', xlab = "Time", ylab = "Detrended Data", main = "Time Series")
+res <- MannKendall(y_det)
+summary(res)
+
+y_det_mat <- t(matrix(y_det, nrow = 12))
+y_rank <- apply(y_det_mat, MARGIN = 2
+                , FUN = rank)
+
+y_month_sum = apply(y_rank, 1, sum)
+
+r <- 12
+c <- n / 12
+
+X_stat <- 12 * sum( (y_month_sum - (c*(r+1))/2)^2 ) / (c*r*(r+1))
+
+p_val <- 1 - pchisq(X_stat, r-1)
+p_val
+# Seasonal component is present in the data
+
+############## Extracting seasonal component
